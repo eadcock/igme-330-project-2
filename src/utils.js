@@ -1,3 +1,5 @@
+import * as defaults from './main.js';
+
 const utils = {
     // flatten a 2d array in to a 1d array
     flattenArray(array) {
@@ -15,24 +17,24 @@ const utils = {
         getRandomElement(arr) {
             return arr[getRandomInt(0, arr.length - 1)];
         },
-        getRandomColor(alpha = drawParams.defaultAlpha) {
-            const getByte = _ => drawParams.colorRange.min + Math.round(Math.random() * (drawParams.colorRange.max -
-                drawParams.colorRange.min));
+        getRandomColor(alpha = 255) {
+            const getByte = _ => 0 + Math.round(Math.random() * (255 -
+                0));
             return `rgba(${getByte()},${getByte()},${getByte()},${alpha})`;
         },
     },
-    
+
     draw: {
         randomRect(ctx) {
             ctx.save();
             ctx.beginPath();
-            ctx.rect(random.getRandomInt(0, canvasWidth), random.getRandomInt(0, canvasHeight),
-            random.getRandomInt(drawParams.rectSpan.min, drawParams.rectSpan.max),
-            random.getRandomInt(drawParams.rectSpan.min, drawParams.rectSpan.max));
+            ctx.rect(utils.random.getRandomInt(0, defaults.canvasWidth), utils.random.getRandomInt(0, defaults.canvasHeight),
+                utils.random.getRandomInt(10, 20),
+                utils.random.getRandomInt(10, 20));
             ctx.closePath();
-            ctx.strokeStyle = random.getRandomColor();
-            ctx.fillStyle = random.getRandomColor();
-            ctx.lineWidth = random.getRandomInt(drawParams.strokeWidth.min, drawParams.strokeWidth.max);
+            ctx.strokeStyle = utils.random.getRandomColor();
+            ctx.fillStyle = utils.random.getRandomColor();
+            ctx.lineWidth = utils.random.getRandomInt(1, 10);
             ctx.fill();
             ctx.stroke();
             ctx.restore();
@@ -40,12 +42,11 @@ const utils = {
         randomCircle(ctx) {
             ctx.save();
             ctx.beginPath();
-            ctx.arc(random.getRandomInt(0, canvasWidth), random.getRandomInt(0, canvasHeight), random.getRandomInt(drawParams.circleRadius
-                .min,
-                drawParams.circleRadius.max), 0, Math.PI * 2, false);
+            ctx.arc(utils.random.getRandomInt(0, defaults.canvasWidth), utils.random.getRandomInt(0, defaults.canvasHeight), utils.random.getRandomInt(10,
+                20), 0, Math.PI * 2, false);
             ctx.closePath();
             ctx.globalAlpha = 0.2;
-            ctx.fillStyle = random.getRandomColor();
+            ctx.fillStyle = utils.random.getRandomColor();
             ctx.fill();
             ctx.restore();
         },
@@ -55,7 +56,7 @@ const utils = {
             ctx.moveTo(getRandomInt(0, canvasWidth), getRandomInt(0, canvasHeight));
             ctx.lineTo(getRandomInt(0, canvasWidth), getRandomInt(0, canvasHeight));
             ctx.closePath();
-            ctx.strokeStyle = random.getRandomColor();
+            ctx.strokeStyle = utils.random.getRandomColor();
             ctx.stroke();
             ctx.restore();
         },
@@ -82,11 +83,13 @@ const utils = {
             ctx.restore();
         }
     },
-    
+
     cls(ctx) {
         setInterval(_ => cls(ctx), 30000);
-        ctx.clearRect(0, 0, canvasHeight, canvasWidth);
+        ctx.clearRect(0, 0, defaults.canvasWidth, defaults.canvasHeight);
     },
 }
 
-export { utils };
+export {
+    utils
+};

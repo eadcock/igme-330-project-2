@@ -1,4 +1,6 @@
-import { utils } from 'utils.js';
+import {
+    utils
+} from './utils.js';
 
 let canvas, ctx;
 const canvasWidth = 600;
@@ -17,6 +19,8 @@ function init() {
 }
 
 function loop() {
+    requestAnimationFrame(loop);
+    utils.draw.randomCircle(ctx);
     // draw black background
 
     // draw all objects *not* hidden here
@@ -26,3 +30,8 @@ function loop() {
 
     // draw all hidden objects
 }
+
+export {
+    canvasWidth,
+    canvasHeight
+};
