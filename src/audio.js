@@ -14,6 +14,7 @@ function setupWebaudio(filePath) {
     element = new Audio();
     loadSoundFile(filePath);
     sourceNode = audioCtx.createMediaElementSource(element);
+    sourceNode.loop = true;
     analyserNode = audioCtx.createAnalyser();
 
     analyserNode.fftSize = DEFAULTS.numSamples;
@@ -48,5 +49,6 @@ export {
     pauseCurrentSound,
     loadSoundFile,
     setVolume,
+    audioData,
     analyserNode
 };
