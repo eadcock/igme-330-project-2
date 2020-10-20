@@ -83,6 +83,10 @@ const utils = {
             ctx.restore();
         }
     },
+    
+    makeColor(red, green, blue, alpha = 1) {
+        return `rgba(${red},${green},${blue},${alpha})`;
+    },
 
     cls(ctx) {
         setInterval(_ => cls(ctx), 30000);
