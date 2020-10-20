@@ -3,12 +3,14 @@ import {
 } from './utils.js';
 import * as audio from './audio.js';
 import * as input from './input.js';
+import * as gameObjects from './game-objects.js';
 
 let canvas, ctx, analyserNode, audioData;
 const canvasWidth = 600;
 const canvasHeight = 400;
 let fps = 30;
 let player;
+let walls = [];
 window.onload = init;
 document.addEventListener('keydown', input.manageKeyDown);
 document.addEventListener('keyup', input.manageKeyUp);
@@ -19,8 +21,8 @@ function init() {
     canvas.height = canvasHeight;
     ctx = canvas.getContext('2d');
 
-    player = new Player(250, 50);
-
+    player = new gameObjects.Player(ctx, 250, 50, 0, 0);
+    buildLevel(ctx);
 
     audio.setupWebaudio('src\\HOME - Resonance.mp3');
 
@@ -46,6 +48,32 @@ function init() {
     loop();
 }
 
+function buildLevel(ctx) {
+    // build walls
+    walls.push(new gameObjects.Wall(ctx, 0, 0, 600, 5));
+
+    walls.push(new gameObjects.Wall(ctx, 0, 0, 5, 400)); // left
+
+    walls.push(new gameObjects.Wall(ctx, 0, 395, 300, 5)); // bottom
+    walls.push(new gameObjects.Wall(ctx, 400, 395, 200, 5));
+
+    walls.push(new gameObjects.Wall(ctx, 595, 0, 5, 400)); // right
+
+    walls.push(new gameObjects.Wall(ctx, 100, 0, 5, 200)); // top left L
+    walls.push(new gameObjects.Wall(ctx, 100, 200, 100, 5));
+
+    walls.push(new gameObjects.Wall(ctx, 300, 0, 5, 100)); // entrance
+    walls.push(new gameObjects.Wall(ctx, 200, 100, 105, 5));
+
+    walls.push(new gameObjects.Wall(ctx, 500, 100, 5, 100)); // right L
+    walls.push(new gameObjects.Wall(ctx, 500, 200, 100, 5));
+
+    walls.push(new gameObjects.Wall(ctx, 500, 100, 5, 100)); // cross
+    walls.push(new gameObjects.Wall(ctx, 300, 200, 5, 200));
+    walls.push(new gameObjects.Wall(ctx, 100, 300, 400, 5));
+    walls.push(new gameObjects.Wall(ctx, 400, 100, 5, 200));
+}
+
 function loop() {
     requestAnimationFrame(loop);
     audio.analyserNode.getByteFrequencyData(audio.audioData);
@@ -58,11 +86,11 @@ function loop() {
     ctx.restore();
 
     // draw all objects *not* hidden here
-    player.update(ctx);
+    player.update(walls);
 
     // draw all sound circles
     // use ctx.clip() to draw circles
-    let maxRadius = canvasHeight / 3;
+    let maxRadius = canvasHeight / 2;
     ctx.save();
     ctx.globalAlpha = 0.5;
     let sum = 0;
@@ -70,27 +98,6 @@ function loop() {
         let percent = audio.audioData[i] / 255;
         let circleRadius = percent * maxRadius;
         sum += circleRadius;
-
-        // // red-ish circles
-        // ctx.beginPath();
-        // ctx.strokeStyle = utils.makeColor(255, 255, 255, 0.34 - percent / 3.0);
-        // ctx.arc(canvasWidth / 2, canvasHeight / 2, circleRadius, 0, 2 * Math.PI, false);
-        // ctx.stroke();
-        // ctx.closePath();
-
-        // // blue-ish circles, bigger, more transparent
-        // ctx.beginPath();
-        // ctx.strokeStyle = utils.makeColor(255, 255, 255, 0.10 - percent / 7.0);
-        // ctx.arc(canvasWidth / 2, canvasHeight / 2, circleRadius * 1.5, 0, 2 * Math.PI, false);
-        // ctx.stroke();
-        // ctx.closePath();
-
-        // // yellow-ish circles, smaller
-        // ctx.beginPath();
-        // ctx.strokeStyle = utils.makeColor(255, 255, 255, 0.3 - percent / 20.0);
-        // ctx.arc(canvasWidth / 2, canvasHeight / 2, circleRadius * 0.50, 0, 2 * Math.PI, false);
-        // ctx.stroke();
-        // ctx.closePath();
     }
 
     let avg = sum / audio.audioData.length;
@@ -98,43 +105,25 @@ function loop() {
     ctx.beginPath();
     ctx.strokeStyle = utils.makeColor(255, 255, 255, 0.9);
     ctx.lineWidth = 2;
-    ctx.arc(player.position.x, player.position.y, avg, 0, 2 * Math.PI, false);
+    ctx.arc(player.x, player.y, avg, 0, 2 * Math.PI, false);
     ctx.stroke();
     ctx.closePath();
 
     ctx.beginPath();
     ctx.strokeStyle = utils.makeColor(255, 255, 255, 0.9);
     ctx.lineWidth = 2;
-    ctx.arc(player.position.x, player.position.y, avg * 2, 0, 2 * Math.PI, false);
+    ctx.arc(player.x, player.y, avg * 2, 0, 2 * Math.PI, false);
     ctx.stroke();
     ctx.clip();
     ctx.closePath();
 
     ctx.globalAlpha = 1;
     // draw all hidden objects
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, 600, 5); // top
+    
+    for(let i = 0; i < walls.length; i++) {
+        walls[i].draw();
+    }
 
-    ctx.fillRect(0, 0, 5, 400); // left
-
-    ctx.fillRect(0, 395, 300, 5); // bottom
-    ctx.fillRect(400, 395, 200, 5);
-
-    ctx.fillRect(595, 0, 5, 400); // right
-
-    ctx.fillRect(100, 0, 5, 200); // top left L
-    ctx.fillRect(100, 200, 100, 5);
-
-    ctx.fillRect(300, 0, 5, 100); // entrance
-    ctx.fillRect(200, 100, 105, 5);
-
-    ctx.fillRect(500, 100, 5, 100); // right L
-    ctx.fillRect(500, 200, 100, 5);
-
-    ctx.fillRect(500, 100, 5, 100); // cross
-    ctx.fillRect(300, 200, 5, 200);
-    ctx.fillRect(100, 300, 400, 5);
-    ctx.fillRect(400, 100, 5, 200);
     ctx.restore();
 }
 
