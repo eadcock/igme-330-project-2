@@ -24,7 +24,7 @@ function init() {
     player = new gameObjects.Player(ctx, 250, 50, 0, 0);
     buildLevel(ctx);
 
-    audio.setupWebaudio('src\\HOME - Resonance.mp3');
+    audio.setupWebaudio('src\\HOME-Resonance.mp3');
 
     document.querySelector('button').onclick = e => {
         // check if context is in suspended state (autoplay policy)
@@ -130,5 +130,6 @@ function loop() {
 export {
     canvasWidth,
     canvasHeight,
-    player
+    player,
+    init
 };
