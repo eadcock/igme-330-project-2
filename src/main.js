@@ -11,6 +11,7 @@ const canvasHeight = 400;
 let fps = 30;
 let player;
 let walls = [];
+let enemies = [];
 window.onload = init;
 document.addEventListener('keydown', input.manageKeyDown);
 document.addEventListener('keyup', input.manageKeyUp);
@@ -72,6 +73,10 @@ function buildLevel(ctx) {
     walls.push(new gameObjects.Wall(ctx, 300, 200, 5, 200));
     walls.push(new gameObjects.Wall(ctx, 100, 300, 400, 5));
     walls.push(new gameObjects.Wall(ctx, 400, 100, 5, 200));
+    
+    // build enemies
+    enemies.push(new gameObjects.Enemy(ctx, [{x:50, y:50}, {x:50, y:350}, {x:250, y:350}]));
+    enemies.push(new gameObjects.Enemy(ctx, [{x:550, y:150}, {x:550, y:50}, {x:350, y:50}, {x:350, y:250}, {x:350, y:50}, {x:550, y:50}]));
 }
 
 function loop() {
@@ -86,7 +91,7 @@ function loop() {
     ctx.restore();
 
     // draw all objects *not* hidden here
-    player.update(walls);
+    player.update(enemies, walls);
 
     // draw all sound circles
     // use ctx.clip() to draw circles
@@ -122,6 +127,17 @@ function loop() {
     
     for(let i = 0; i < walls.length; i++) {
         walls[i].draw();
+    }
+    for (let i = 0; i < enemies.length; i++) {
+        enemies[i].update();
+        
+        // draw surrounding circle
+        ctx.beginPath();
+        ctx.strokeStyle = utils.makeColor(255, 0, 0, 0.9);
+        ctx.lineWidth = 2;
+        ctx.arc(enemies[i].x, enemies[i].y, avg, 0, 2 * Math.PI, false);
+        ctx.stroke();
+        ctx.closePath();
     }
 
     ctx.restore();
