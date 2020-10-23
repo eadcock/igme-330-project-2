@@ -53,7 +53,7 @@ function update(now) {
     if(playing) {
         if(!duration) duration = 0;
         duration += now - last;
-        console.log(duration);
+        console.log(duration, element.duration * 1000);
         if(duration >= element.duration * 1000) {
             console.log('end');
             element.currentTime = 0;

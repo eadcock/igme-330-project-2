@@ -101,7 +101,7 @@ class Player extends GameObject {
         this.ctx.closePath();
         this.ctx.restore();
 
-        this.drawIndicator(this.audioData, true);
+        //this.drawIndicator(this.audioData, true);
 
         audio.analyserNode.getFloatTimeDomainData(this.audioData);
         //draw indicator
@@ -112,7 +112,7 @@ class Player extends GameObject {
         this.ctx.save();
         this.ctx.globalCompositeOperation = 'source-over';
         this.ctx.translate(this.x, this.y);
-        this.ctx.strokeStyle = clear ? 'black' : utils.makeColor(255, 255, 255, 0.2);
+        this.ctx.strokeStyle = clear ? 'black' : utils.makeColor(255, 255, 255, 0.1);
         this.ctx.lineWidth = clear ? 10 : 1;
         this.ctx.beginPath();
         let angle = (Math.PI * 4) / this.audioData.length;
@@ -169,7 +169,7 @@ class Player extends GameObject {
 }
 
 class BeatCone extends GameObject {
-    constructor(ctx, x, y, maxRadius = 78, speed = 2) {
+    constructor(ctx, x, y, maxRadius = 150, speed = 2) {
         super(ctx, x, y, 0, 0);
         this.radius = 20;
         this.maxRadius = maxRadius;
