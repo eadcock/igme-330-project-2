@@ -19,6 +19,7 @@ let last;
 let beat = [];
 let maxRadius = 78;
 let walls = [];
+let enemies = [];
 document.addEventListener('keydown', input.manageKeyDown);
 document.addEventListener('keyup', input.manageKeyUp);
 function init() {
@@ -78,6 +79,10 @@ function buildLevel(ctx) {
     walls.push(new gameObjects.Wall(ctx, 300, 200, 5, 200));
     walls.push(new gameObjects.Wall(ctx, 100, 300, 400, 5));
     walls.push(new gameObjects.Wall(ctx, 400, 100, 5, 200));
+    
+    // build enemies
+    enemies.push(new gameObjects.Enemy(ctx, [{x:50, y:50}, {x:50, y:350}, {x:250, y:350}]));
+    enemies.push(new gameObjects.Enemy(ctx, [{x:550, y:150}, {x:550, y:50}, {x:350, y:50}, {x:350, y:250}, {x:350, y:50}, {x:550, y:50}]));
 }
 
 function loop(now) {
@@ -121,9 +126,20 @@ function loop(now) {
     for(let i = 0; i < walls.length; i++) {
         walls[i].draw();
     }
+    for (let i = 0; i < enemies.length; i++) {
+        enemies[i].update();
+        
+        // draw surrounding circle
+        // ctx.beginPath();
+        // ctx.strokeStyle = utils.makeColor(255, 0, 0, 0.9);
+        // ctx.lineWidth = 2;
+        // ctx.arc(enemies[i].x, enemies[i].y, avg, 0, 2 * Math.PI, false);
+        // ctx.stroke();
+        // ctx.closePath();
+    }
     ctx.restore();
 
-    player.update(walls);
+    player.update(enemies, walls);
     
     ctx.restore();
 
@@ -189,6 +205,26 @@ function frequencyVisionCone() {
     ctx.stroke();
     ctx.clip();
     ctx.closePath();
+
+    ctx.globalAlpha = 1;
+    // draw all hidden objects
+    
+    for(let i = 0; i < walls.length; i++) {
+        walls[i].draw();
+    }
+    for (let i = 0; i < enemies.length; i++) {
+        enemies[i].update();
+        
+        // draw surrounding circle
+        ctx.beginPath();
+        ctx.strokeStyle = utils.makeColor(255, 0, 0, 0.9);
+        ctx.lineWidth = 2;
+        ctx.arc(enemies[i].x, enemies[i].y, avg, 0, 2 * Math.PI, false);
+        ctx.stroke();
+        ctx.closePath();
+    }
+
+    ctx.restore();
 }
 
 export {

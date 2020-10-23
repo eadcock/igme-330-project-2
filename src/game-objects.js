@@ -3,7 +3,7 @@ import * as audio from './audio.js';
 import { canvasWidth, canvasHeight } from './main.js';
 
 class GameObject {
-    constructor(ctx, x, y, vx, vy) {
+    constructor(ctx, x = 0, y = 0, vx = 0, vy = 0) {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -53,14 +53,28 @@ class Player extends GameObject {
         super(ctx, x, y, vx, vy);
         this.speed = 1;
         this.audioData = new Float32Array(audio.analyserNode.fftSize);
+        this.initialX = x;
+        this.initialY = y;
     }
 
-    update(walls) {
+    update(enemies, walls) {
         let canMove = true;
         let futurePos = {
             x: this.x + this.vx * this.speed,
             y: this.y + this.vy * this.speed
         };
+        
+        // check if colliding with enemies
+        for (let i = 0; i < enemies.length; i++) {
+            if (this.testCollision(futurePos, enemies[i])) {
+                this.x = this.initialX;
+                this.y = this.initialY;
+                canMove = false;
+                break;
+            }
+        }
+        
+        // check if colliding with walls
         for (let i = 0; i < walls.length; i++) {
             if (this.testCollision(futurePos, walls[i])) {
                 canMove = false;
@@ -200,8 +214,63 @@ class BeatCone extends GameObject {
     }
 }
 
+class Enemy extends GameObject {
+    constructor(ctx, movePath) {
+        super(ctx);
+        this.w = 30;
+        this.h = 30;
+        this.speed = 1;
+        this.movePath = movePath;
+        this.currentPos = 0;
+        this.x = movePath[this.currentPos].x;
+        this.y = movePath[this.currentPos].y;
+    }
+    
+    update() {
+        // update pos
+        this.vx = 0;
+        this.vy = 0;
+        if (this.x > this.movePath[this.currentPos].x) {
+            this.vx = -1; // go left
+        } else if (this.x < this.movePath[this.currentPos].x) {
+            this.vx = 1; // go right
+        } else if (this.y > this.movePath[this.currentPos].y) {
+            this.vy = -1; // go up
+        } else if (this.y < this.movePath[this.currentPos].y) {
+            this.vy = 1; // go down
+        }
+        
+        // apply changes
+        this.x += this.vx * this.speed;
+        this.y += this.vy * this.speed;
+        
+        // check pos
+        // update currentPos if needed
+        if (this.movePath[this.currentPos].x == this.x && this.movePath[this.currentPos].y == this.y) {
+            this.currentPos++;
+            
+            if (this.currentPos == this.movePath.length) {
+                this.currentPos = 0;
+            }
+        }
+        
+        this.draw();
+    }
+    
+    draw() {
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.fillStyle = 'red';
+        this.ctx.arc(this.x, this.y, 10, 0, Math.PI * 2, false);
+        this.ctx.fill();
+        this.ctx.closePath();
+        this.ctx.restore();
+    }
+}
+
 export {
     Player,
     Wall,
-    BeatCone
+    BeatCone,
+    Enemy
 };
