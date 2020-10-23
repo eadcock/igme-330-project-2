@@ -1,16 +1,20 @@
+import { utils } from './utils.js';
+import * as audio from './audio.js';
+import { canvasWidth, canvasHeight } from './main.js';
+
 class GameObject {
     constructor(ctx, x, y, vx, vy) {
-        console.log('super');
         this.ctx = ctx;
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
+        this.radius = 1;
     }
 
     draw() {
         ctx.save();
-        ctx.arc(this.x, this.y, 1, 0, Math.PI * 2, false);
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
         ctx.restore();
     }
 
@@ -47,8 +51,8 @@ class Wall extends GameObject {
 class Player extends GameObject {
     constructor(ctx, x, y, vx, vy) {
         super(ctx, x, y, vx, vy);
-        this.speed = 2;
-
+        this.speed = 1;
+        this.audioData = new Float32Array(audio.analyserNode.fftSize);
     }
 
     update(walls) {
@@ -73,13 +77,60 @@ class Player extends GameObject {
     }
 
     draw() {
+        // draw player
         this.ctx.save();
+        this.ctx.globalCompositeOperation = 'source-over';
         this.ctx.beginPath();
         this.ctx.fillStyle = 'white';
         this.ctx.arc(this.x, this.y, 5, 0, Math.PI * 2, false);
         this.ctx.fill();
         this.ctx.closePath();
         this.ctx.restore();
+
+        this.drawIndicator(this.audioData, true);
+
+        audio.analyserNode.getFloatTimeDomainData(this.audioData);
+        //draw indicator
+        this.drawIndicator(this.audioData);
+    }
+
+    drawIndicator(audioData, clear = false) {
+        this.ctx.save();
+        this.ctx.globalCompositeOperation = 'source-over';
+        this.ctx.translate(this.x, this.y);
+        this.ctx.strokeStyle = clear ? 'black' : utils.makeColor(255, 255, 255, 0.2);
+        this.ctx.lineWidth = clear ? 10 : 1;
+        this.ctx.beginPath();
+        let angle = (Math.PI * 4) / this.audioData.length;
+        let sampleRange = [-1, 1];
+        let radiusRange = [10, 40];
+        for(let i = 0; i < this.audioData.length; i += 2) {
+            let mappedValue = utils.map(this.audioData[i], [0, 255], [0, canvasHeight]);
+            let padding = 3;
+            if(i == 0) {
+                this.ctx.moveTo(Math.cos(angle * i) * utils.map(this.audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(this.audioData[i], sampleRange, radiusRange));
+            } else {
+                this.ctx.lineTo(Math.cos(angle * i) * utils.map(this.audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(this.audioData[i], sampleRange, radiusRange));
+            }
+        }
+        this.ctx.closePath();
+        this.ctx.stroke();
+        this.ctx.restore();
+    }
+
+    clearLastIndicator() {
+        if(this.lastIndicatorX && this.lastIndicatorY) {
+            this.ctx.save();
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = utils.makeColor(0, 0, 0, 0.5);
+            this.ctx.lineWidth = 5;
+            this.ctx.arc(this.x, this.y, 20, 0, Math.PI * 2, false);
+            this.ctx.stroke();
+            this.ctx.closePath();
+            this.ctx.restore();
+
+        }
     }
 
     move(up, down, left, right) {
@@ -103,7 +154,54 @@ class Player extends GameObject {
     }
 }
 
+class BeatCone extends GameObject {
+    constructor(ctx, x, y, maxRadius = 78, speed = 2) {
+        super(ctx, x, y, 0, 0);
+        this.radius = 20;
+        this.maxRadius = maxRadius;
+        this.speed = speed;
+    }
+
+    update(now) {
+        let elapsedTime = now - this.creationTime;
+        if(this.radius >= this.maxRadius) {
+            console.log('delete');
+            return true;
+        }
+
+        this.radius += this.speed;
+        this.drawVision();
+    }
+
+    drawVision() {
+        this.ctx.globalCompositeOperation = 'xor';
+        this.ctx.beginPath();
+        // ctx.strokeStyle = utils.makeColor(255, 0, 255, 0.9);
+        // ctx.lineWidth = 4;
+        let gradient = this.ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+        gradient.addColorStop(0.8, 'rgba(0, 0, 0, 255)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        this.ctx.fillStyle = gradient;
+        this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, true);
+        this.ctx.fill();
+        this.ctx.closePath();
+    }
+
+    drawOutline() {
+        this.ctx.save();
+        this.ctx.globalCompositeOperation = 'source-over';
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = utils.makeColor(255, 255, 255, 0.1);
+        this.ctx.lineWidth = 4;
+        this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, true);
+        this.ctx.stroke();
+        this.ctx.closePath();
+        this.ctx.restore();
+    }
+}
+
 export {
     Player,
-    Wall
+    Wall,
+    BeatCone
 };

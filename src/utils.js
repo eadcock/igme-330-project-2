@@ -88,10 +88,26 @@ const utils = {
         return `rgba(${red},${green},${blue},${alpha})`;
     },
 
-    cls(ctx) {
-        setInterval(_ => cls(ctx), 30000);
-        ctx.clearRect(0, 0, defaults.canvasWidth, defaults.canvasHeight);
+    makeGradient(ctx, x, y, r1, r2, ...colors) {
+        let gradient = ctx.createRadialGradient(x, y, r1, x, y, r2);
+        for(let i = 0; i < colors.length; i++) {
+            gradient.addColorStop(i / colors.length, colors[i]);
+        }
+        return gradient;
     },
+
+    cls(ctx) {
+        ctx.fillStyle = 'rgba(0,0,0,0)';
+        ctx.fillRect(0, 0, defaults.canvasWidth, defaults.canvasHeight);
+    },
+
+    map(input, rangeIn, rangeOut) {
+        return (input - rangeIn[0]) * (rangeOut[1] - rangeOut[0]) / (rangeIn[1] - rangeIn[0]) + rangeOut[0];
+    },
+
+    mapArray(array, rangeIn, rangeOut) {
+        return inputs.map(map, rangeIn, rangeOut);
+    }
 }
 
 export {
