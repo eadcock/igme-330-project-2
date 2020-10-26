@@ -82,8 +82,11 @@ class Maze {
 
     chooseIndex(max, how = 'chooseNewest') {
         switch(how) {
+            case 'random':
+                return utils.random.getRandomInt(0, max);
             default:
                 return max - 1;
+                break;
         }
     }
 

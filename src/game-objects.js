@@ -102,8 +102,7 @@ class Player extends GameObject {
         // check if colliding with enemies
         for (let i = 0; i < enemies.length; i++) {
             if (this.testCollision(futurePos, enemies[i])) {
-                this.x = this.initialX;
-                this.y = this.initialY;
+                this.resetPosition();
                 canMove = false;
                 break;
             }
@@ -121,6 +120,11 @@ class Player extends GameObject {
             this.x = futurePos.x;
             this.y = futurePos.y;
         }
+    }
+
+    resetPosition() {
+        this.x = this.initialX;
+        this.y = this.initialY;
     }
 
     draw() {

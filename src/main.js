@@ -5,6 +5,7 @@ import * as audio from './audio.js';
 import * as input from './input.js';
 import * as gameObjects from './game-objects.js';
 import {Maze, Cell} from './Maze.js';
+import { setUpUI } from './ui.js';
 
 let canvas, ctx, analyserNode, audioData;
 const canvasWidth = 1080;
@@ -17,10 +18,12 @@ let player;
 // shelter = 90
 // bury a friend = 120
 
-let bpm = 120;
-let spb = 60 / bpm;
-let timeSinceLastBeat = -700;
-let last;
+const beatParams = {
+    bpm: 120,
+    spb: _ => 60 / beatParams.bpm,
+    timeSinceLastBeat: -700,
+    last: 0
+}
 
 let beat = [];
 let maxRadius = 78;
@@ -42,30 +45,16 @@ function init() {
 
     player = new gameObjects.Player(ctx, 250, 50, 0, 0);
 
-    document.querySelector('#play').onclick = e => {
-        // check if context is in suspended state (autoplay policy)
-        if (audio.audioCtx.state == 'suspended') {
-            audio.audioCtx.resume();
-        }
-
-        if (e.target.dataset.playing == 'no') {
-            // if track is currently paused, play it
-            audio.playCurrentSound();
-            e.target.dataset.playing = 'yes'; // our css will set the text to 'pause'
-            last = spb * 1000;
-            last -= 700;
-        } else {
-            // if track is playing, pause it
-            audio.pauseCurrentSound();
-            e.target.dataset.playing = 'no'; // our css will set the text to 'play'
-        }
-    }
+    
 
     audio.setVolume(0.2);
+
+    setUpUI();
+
     loop();
 }
 
-function buildLevel(ctx) {
+function buildLevel() {
     // build walls
     maze = new Maze(ctx, walls, canvasWidth, canvasHeight, 12, 8);
 
@@ -95,6 +84,13 @@ function buildLevel(ctx) {
     enemies.push(new gameObjects.Enemy(ctx, [{x:550, y:150}, {x:550, y:50}, {x:350, y:50}, {x:350, y:250}, {x:350, y:50}, {x:550, y:50}]));
 }
 
+function reset() {
+    player.resetPosition();
+    walls = [];
+    enemies = []
+    buildLevel();
+}
+
 function loop(now) {
     requestAnimationFrame(loop);
 
@@ -103,14 +99,14 @@ function loop(now) {
 
     ctx.save();
 
-    if(audio.playing) timeSinceLastBeat += now - (last ?? 0);
-    if(timeSinceLastBeat > spb * 1000) {
+    if(audio.playing) beatParams.timeSinceLastBeat += now - (beatParams.last ?? 0);
+    if(beatParams.timeSinceLastBeat > beatParams.spb() * 1000) {
         beat.push(new gameObjects.BeatCone(ctx, player.x, player.y));
-        timeSinceLastBeat = 0;
+        beatParams.timeSinceLastBeat = 0;
     }
 
     ctx.fillStyle = 'black';
-    ctx.globalAlpha = 0.1;
+    ctx.globalAlpha = 0.2;
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     if(audio.playing) {
@@ -137,7 +133,7 @@ function loop(now) {
     // draw all hidden objects
 
     ctx.save();
-    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalCompositeOperation = 'destination-over';
     audio.analyserNode.getByteFrequencyData(audio.audioData);
     walls[0].resetIndex();
     for(let i = 0; i < walls.length; i++) {
@@ -161,7 +157,7 @@ function loop(now) {
     
     ctx.restore();
 
-    last = now;
+    beatParams.last = now;
 }
 
 // function bpmVisionCone(now) {
@@ -242,5 +238,8 @@ export {
     canvasWidth,
     canvasHeight,
     player,
-    init
+    init,
+    reset,
+    beatParams,
+    beat
 };

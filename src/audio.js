@@ -23,8 +23,6 @@ function setupWebaudio(filePath) {
     sourceNode.connect(analyserNode);
     analyserNode.connect(gainNode);
     gainNode.connect(audioCtx.destination);
-
-    document.querySelector('#restart').addEventListener('click', restart);
 }
 
 function loadSoundFile(filePath) {
@@ -38,7 +36,6 @@ function playCurrentSound(now) {
 }
 
 function pauseCurrentSound() {
-    console.log(duration);
     element.pause();
     playing = false;
 }
@@ -50,6 +47,10 @@ function endSong() {
 function setVolume(value) {
     value = Number(value);
     gainNode.gain.value = value;
+}
+
+function getVolume() {
+    return gainNode.gain.value;
 }
 
 function restart() {
@@ -74,5 +75,7 @@ export {
     analyserNode,
     playing,
     update,
-    endSong
+    endSong,
+    getVolume,
+    element
 };
