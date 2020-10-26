@@ -33,18 +33,54 @@ class GameObject {
             bBottom < aTop);
     }
 }
-
+let offset = 1;
+let index = 0;
 class Wall extends GameObject {
     constructor(ctx, x, y, w, h) {
         super(ctx, x, y, 0, 1);
         this.w = w;
         this.h = h;
+        this.sliceWidth = 5;
     }
 
-    draw() {
+    draw(audioData) {
         this.ctx.globalAlpha = 1;
         this.ctx.fillStyle = 'white';
-        this.ctx.fillRect(this.x, this.y, this.w, this.h);
+        let x = this.x, y = this.y;
+        let w, h;
+        let longSide = this.w > this.h ? this.w : this.h;
+        if(this.w > this.h) {
+            longSide = this.w;
+            w = 5;
+        } else {
+            longSide = this.h;
+            h = 5;
+        }
+        let slices = longSide / this.sliceWidth;
+        let direction = 20;
+        
+        for(let i = 0; i < slices; i++) {
+            if(longSide == this.w) {
+                h = utils.map(audioData[utils.bounce(index, [0, audioData.length - 1])], [0, 255], [2, 20]) / 2;
+                this.ctx.fillRect(x, y - h, this.sliceWidth, h * 2);
+                x += this.sliceWidth;
+            } else {
+                w = utils.map(audioData[utils.bounce(index, [0, audioData.length - 1])], [0, 255], [1, 20]) / 2;
+                this.ctx.fillRect(x - w, y, w * 2, this.sliceWidth);
+                y += this.sliceWidth;
+            }
+
+            if(i + direction > audioData.length - 1) direction = -1;
+            else if (i - direction < 0) direction = 1;
+
+            index++;
+        }
+        offset += slices;
+        if(offset > audioData.length) offset = 0;
+    }
+
+    resetIndex() {
+        index = 0;
     }
 }
 
@@ -52,7 +88,6 @@ class Player extends GameObject {
     constructor(ctx, x, y, vx, vy) {
         super(ctx, x, y, vx, vy);
         this.speed = 1;
-        this.audioData = new Float32Array(audio.analyserNode.fftSize);
         this.initialX = x;
         this.initialY = y;
     }
@@ -86,8 +121,6 @@ class Player extends GameObject {
             this.x = futurePos.x;
             this.y = futurePos.y;
         }
-
-        this.draw();
     }
 
     draw() {
@@ -103,28 +136,25 @@ class Player extends GameObject {
 
         //this.drawIndicator(this.audioData, true);
 
-        audio.analyserNode.getFloatTimeDomainData(this.audioData);
         //draw indicator
-        this.drawIndicator(this.audioData);
+        //this.drawIndicator(this.audioData);
     }
 
-    drawIndicator(audioData, clear = false) {
+    drawIndicator(audioData, fill = false) {
         this.ctx.save();
         this.ctx.globalCompositeOperation = 'source-over';
         this.ctx.translate(this.x, this.y);
-        this.ctx.strokeStyle = clear ? 'black' : utils.makeColor(255, 255, 255, 0.1);
-        this.ctx.lineWidth = clear ? 10 : 1;
+        this.ctx.strokeStyle = utils.makeColor(255, 255, 255, 1);
+        this.ctx.lineWidth = 1;
         this.ctx.beginPath();
-        let angle = (Math.PI * 4) / this.audioData.length;
+        let angle = (Math.PI * 4) / audioData.length;
         let sampleRange = [-1, 1];
         let radiusRange = [10, 40];
-        for(let i = 0; i < this.audioData.length; i += 2) {
-            let mappedValue = utils.map(this.audioData[i], [0, 255], [0, canvasHeight]);
-            let padding = 3;
+        for(let i = 0; i < audioData.length; i += 2) {
             if(i == 0) {
-                this.ctx.moveTo(Math.cos(angle * i) * utils.map(this.audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(this.audioData[i], sampleRange, radiusRange));
+                this.ctx.moveTo(Math.cos(angle * i) * utils.map(audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(audioData[i], sampleRange, radiusRange));
             } else {
-                this.ctx.lineTo(Math.cos(angle * i) * utils.map(this.audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(this.audioData[i], sampleRange, radiusRange));
+                this.ctx.lineTo(Math.cos(angle * i) * utils.map(audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(audioData[i], sampleRange, radiusRange));
             }
         }
         this.ctx.closePath();
@@ -149,22 +179,40 @@ class Player extends GameObject {
 
     move(up, down, left, right) {
         if (up) {
-            this.vy = -1;
+            this.vy -= 1;
+            if(this.vy < -1) this.vy = -1;
         }
         if (down) {
-            this.vy = 1;
+            this.vy += 1;
+            if(this.vy > 1) this.vy = 1;
         }
         if (left) {
-            this.vx = -1;
+            this.vx -= 1;
+            if(this.vx < -1) this.vx = -1;
         }
         if (right) {
-            this.vx = 1;
+            this.vx += 1;
+            if(this.vx > 1) this.vx = 1;
         }
     }
 
     stop(up, down, left, right) {
-        if (up || down) this.vy = 0;
-        if (left || right) this.vx = 0;
+        if(up) {
+            this.vy += 1;
+            if(this.vy > 1) this.vy = 1;
+        }
+        if(down) {
+            this.vy -= 1;
+            if(this.vy < -1) this.vy = -1;
+        }
+        if(left) {
+            this.vx += 1;
+            if(this.vx > 1) this.vx = 1;
+        }
+        if(right) {
+            this.vx -= 1;
+            if(this.vx < -1) this.vx = -1;
+        }
     }
 }
 
@@ -179,7 +227,6 @@ class BeatCone extends GameObject {
     update(now) {
         let elapsedTime = now - this.creationTime;
         if(this.radius >= this.maxRadius) {
-            console.log('delete');
             return true;
         }
 

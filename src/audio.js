@@ -23,6 +23,8 @@ function setupWebaudio(filePath) {
     sourceNode.connect(analyserNode);
     analyserNode.connect(gainNode);
     gainNode.connect(audioCtx.destination);
+
+    document.querySelector('#restart').addEventListener('click', restart);
 }
 
 function loadSoundFile(filePath) {
@@ -36,6 +38,7 @@ function playCurrentSound(now) {
 }
 
 function pauseCurrentSound() {
+    console.log(duration);
     element.pause();
     playing = false;
 }
@@ -49,18 +52,14 @@ function setVolume(value) {
     gainNode.gain.value = value;
 }
 
-function update(now) {
-    if(playing) {
-        if(!duration) duration = 0;
-        duration += now - last;
-        console.log(duration, element.duration * 1000);
-        if(duration >= element.duration * 1000) {
-            console.log('end');
-            element.currentTime = 0;
-            duration = 0;
-        }
+function restart() {
+    element.currentTime = element.duration;
+    console.log(element.currentTime);
+}
 
-        last = now;
+function update(now) {
+    if(element.currentTime == element.duration) {
+        element.currentTime = 0;
     }
 }
 

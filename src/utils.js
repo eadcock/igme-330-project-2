@@ -15,7 +15,10 @@ const utils = {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         },
         getRandomElement(arr) {
-            return arr[getRandomInt(0, arr.length - 1)];
+            return arr[utils.random.getRandomInt(0, arr.length - 1)];
+        },
+        getRandomProperty(obj) {
+            return obj[utils.random.getRandomInt(0, Object.keys(obj).length - 1)];
         },
         getRandomColor(alpha = 255) {
             const getByte = _ => 0 + Math.round(Math.random() * (255 -
@@ -107,6 +110,27 @@ const utils = {
 
     mapArray(array, rangeIn, rangeOut) {
         return inputs.map(map, rangeIn, rangeOut);
+    },
+
+    bounce(input, range) {
+        let i = 0;
+        for(; input > range[1]; i++) input -= range[1] - range[0];
+        for(; input < range[0]; i++) input += range[1] - range[0];
+        if(i % 2 == 1) return this.map(input, range, [range[1], range[0]]);
+
+        return input;
+    },
+
+    isInRange(input, range) {
+        return input >= range[0] && input <= range[1];
+    },
+
+    shuffle(array) {
+        for( let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 }
 
