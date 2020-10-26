@@ -43,40 +43,45 @@ class Wall extends GameObject {
         this.sliceWidth = 5;
     }
 
-    draw(audioData) {
-        this.ctx.globalAlpha = 1;
-        this.ctx.fillStyle = 'white';
-        let x = this.x, y = this.y;
-        let w, h;
-        let longSide = this.w > this.h ? this.w : this.h;
-        if(this.w > this.h) {
-            longSide = this.w;
-            w = 5;
-        } else {
-            longSide = this.h;
-            h = 5;
-        }
-        let slices = longSide / this.sliceWidth;
-        let direction = 20;
-        
-        for(let i = 0; i < slices; i++) {
-            if(longSide == this.w) {
-                h = utils.map(audioData[utils.bounce(index, [0, audioData.length - 1])], [0, 255], [2, 20]) / 2;
-                this.ctx.fillRect(x, y - h, this.sliceWidth, h * 2);
-                x += this.sliceWidth;
+    draw(audioData, livingWalls) {
+        if(livingWalls) {
+            this.ctx.globalAlpha = 1;
+            this.ctx.fillStyle = 'white';
+            let x = this.x, y = this.y;
+            let w, h;
+            let longSide = this.w > this.h ? this.w : this.h;
+            if(this.w > this.h) {
+                longSide = this.w;
+                w = 5;
             } else {
-                w = utils.map(audioData[utils.bounce(index, [0, audioData.length - 1])], [0, 255], [1, 20]) / 2;
-                this.ctx.fillRect(x - w, y, w * 2, this.sliceWidth);
-                y += this.sliceWidth;
+                longSide = this.h;
+                h = 5;
             }
-
-            if(i + direction > audioData.length - 1) direction = -1;
-            else if (i - direction < 0) direction = 1;
-
-            index++;
+            let slices = longSide / this.sliceWidth;
+            let direction = 20;
+            
+            for(let i = 0; i < slices; i++) {
+                if(longSide == this.w) {
+                    h = utils.map(audioData[utils.bounce(index, [0, audioData.length - 1])], [0, 255], [2, 20]) / 2;
+                    this.ctx.fillRect(x, y - h, this.sliceWidth, h * 2);
+                    x += this.sliceWidth;
+                } else {
+                    w = utils.map(audioData[utils.bounce(index, [0, audioData.length - 1])], [0, 255], [1, 20]) / 2;
+                    this.ctx.fillRect(x - w, y, w * 2, this.sliceWidth);
+                    y += this.sliceWidth;
+                }
+    
+                if(i + direction > audioData.length - 1) direction = -1;
+                else if (i - direction < 0) direction = 1;
+    
+                index++;
+            }
+        } else {
+            this.ctx.globalAlpha = 1;
+            this.ctx.fillStyle = 'white';
+            this.ctx.fillRect(this.x, this.y, this.w, this.h);
         }
-        offset += slices;
-        if(offset > audioData.length) offset = 0;
+        
     }
 
     resetIndex() {
@@ -144,26 +149,39 @@ class Player extends GameObject {
         //this.drawIndicator(this.audioData);
     }
 
-    drawIndicator(audioData, fill = false) {
-        this.ctx.save();
-        this.ctx.globalCompositeOperation = 'source-over';
-        this.ctx.translate(this.x, this.y);
-        this.ctx.strokeStyle = utils.makeColor(255, 255, 255, 1);
-        this.ctx.lineWidth = 1;
-        this.ctx.beginPath();
-        let angle = (Math.PI * 4) / audioData.length;
-        let sampleRange = [-1, 1];
-        let radiusRange = [10, 40];
-        for(let i = 0; i < audioData.length; i += 2) {
-            if(i == 0) {
-                this.ctx.moveTo(Math.cos(angle * i) * utils.map(audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(audioData[i], sampleRange, radiusRange));
-            } else {
-                this.ctx.lineTo(Math.cos(angle * i) * utils.map(audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(audioData[i], sampleRange, radiusRange));
+    drawIndicator(audioData, fill = false, reactive = false) {
+        if(reactive) {
+            this.ctx.save();
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.translate(this.x, this.y);
+            this.ctx.strokeStyle = utils.makeColor(255, 255, 255, 1);
+            this.ctx.lineWidth = 1;
+            this.ctx.beginPath();
+            let angle = (Math.PI * 4) / audioData.length;
+            let sampleRange = [-1, 1];
+            let radiusRange = [10, 40];
+            for(let i = 0; i < audioData.length; i += 2) {
+                if(i == 0) {
+                    this.ctx.moveTo(Math.cos(angle * i) * utils.map(audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(audioData[i], sampleRange, radiusRange));
+                } else {
+                    this.ctx.lineTo(Math.cos(angle * i) * utils.map(audioData[i], sampleRange, radiusRange), Math.sin(angle * i) * utils.map(audioData[i], sampleRange, radiusRange));
+                }
             }
+            this.ctx.closePath();
+            this.ctx.stroke();
+            this.ctx.restore();
+        } else {
+            this.ctx.save();
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.translate(this.x, this.y);
+            this.ctx.strokeStyle = utils.makeColor(255, 255, 255, 1);
+            this.ctx.lineWidth = 1;
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 25, 0, Math.PI * 2, false);
+            this.ctx.closePath();
+            this.ctx.stroke();
+            this.ctx.restore();
         }
-        this.ctx.closePath();
-        this.ctx.stroke();
-        this.ctx.restore();
     }
 
     clearLastIndicator() {

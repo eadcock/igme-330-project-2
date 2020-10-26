@@ -65,16 +65,16 @@ class Maze {
                 let x = cell.x * cellWidth;
                 let y = cell.y * cellHeight;
                 if(cell.walls.N) {
-                    walls.push(new Wall(ctx, x, y, cellWidth, 5));
+                    walls.push(new Wall(ctx, x, y, cellWidth, 2));
                 }
                 if(cell.walls.S) {
-                    walls.push(new Wall(ctx, x, y + cellHeight, cellWidth, 5));
+                    walls.push(new Wall(ctx, x, y + cellHeight, cellWidth, 2));
                 }
                 if(cell.walls.E) {
-                    walls.push(new Wall(ctx, x + cellWidth, y, 5, cellHeight));
+                    walls.push(new Wall(ctx, x + cellWidth, y, 2, cellHeight));
                 }
                 if(cell.walls.W) {
-                    walls.push(new Wall(ctx, x, y, 5, cellHeight));
+                    walls.push(new Wall(ctx, x, y, 2, cellHeight));
                 }
             }
         }

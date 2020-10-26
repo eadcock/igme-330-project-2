@@ -29,6 +29,12 @@ function setUpUI() {
     for(const radio of document.querySelectorAll('.songSelect')) {
         radio.addEventListener('change', setSong);
     }
+    document.querySelector('#livingWalls').addEventListener('change', e => {
+        main.drawParams.livingWalls = e.target.checked;
+    });
+    document.querySelector('#livingIndicator').addEventListener('change', e => {
+        main.drawParams.livingIndicator = e.target.checked;
+    });
 }
 
 function setSong(e) {
@@ -51,6 +57,9 @@ function setSong(e) {
                 main.beatParams.bpm = 90;
                 main.beatParams.timeSinceLastBeat = -2000;
                 break;
+            default:
+                main.beatParams.bpm = 120;
+                main.beatParams.timeSinceLastBeat = -700;
         }
 
         audio.setVolume(volumeSlider.value / 100);

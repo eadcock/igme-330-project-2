@@ -21,8 +21,13 @@ let player;
 const beatParams = {
     bpm: 120,
     spb: _ => 60 / beatParams.bpm,
-    timeSinceLastBeat: -700,
+    timeSinceLastBeat: -300,
     last: 0
+}
+
+const drawParams = {
+    livingWalls: true,
+    livingIndicator: true
 }
 
 let beat = [];
@@ -119,7 +124,7 @@ function loop(now) {
 
     let audioData = new Float32Array(audio.analyserNode.fftSize);
     audio.analyserNode.getFloatTimeDomainData(audioData);
-    player.drawIndicator(audioData, true);
+    player.drawIndicator(audioData, true, drawParams.livingIndicator);
     ctx.restore();
 
     if(audio.playing) {
@@ -137,7 +142,7 @@ function loop(now) {
     audio.analyserNode.getByteFrequencyData(audio.audioData);
     walls[0].resetIndex();
     for(let i = 0; i < walls.length; i++) {
-        walls[i].draw(audio.audioData);
+        walls[i].draw(audio.audioData, drawParams.livingWalls);
     }
 
     for (let i = 0; i < enemies.length; i++) {
@@ -241,5 +246,6 @@ export {
     init,
     reset,
     beatParams,
-    beat
+    beat,
+    drawParams
 };
