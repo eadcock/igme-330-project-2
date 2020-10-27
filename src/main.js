@@ -34,6 +34,7 @@ let maze;
 
 document.addEventListener('keydown', input.manageKeyDown);
 document.addEventListener('keyup', input.manageKeyUp);
+
 function init() {
     canvas = document.querySelector('canvas');
     canvas.width = canvasWidth;
@@ -225,6 +226,7 @@ export {
     canvasWidth,
     canvasHeight,
     player,
+    enemies,
     init,
     reset,
     beatParams,

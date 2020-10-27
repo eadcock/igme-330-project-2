@@ -5,27 +5,14 @@
     <meta charset="utf-8" />
     <title>Creative Game Title</title>
     <link rel="stylesheet" href="styles/default-styles.css">
+    <script src="src/dat.gui.js"></script>
     <script src="src/loader.js" type='module'></script>
 </head>
 
 <body>
     <h1>Creative Game Title</h1>
     <canvas id='canvas'></canvas>
-    <button id='play' data-playing='no'></button>
-    <button id='restart'>Reset</button>
-    <label for='volume'>Volume</label><input type='range' min='0' max='100' value='20' class='slider' id='volume'>
-    <label for='songSelect'>Select Song</label>
-    <input type='radio' name='songSelect' class='songSelect' id='home' value='src\HOME-Resonance.mp3'>
-    <label for='home'>Home - Resonance</label>
-    <input type='radio' name='songSelect' class='songSelect' id='shelter' value='src\evil shelter.mp3'>
-    <label for='shelter'>Shelter (Madeon's Evil Edit) - Porter Robinson, Madeon</label>
-    <input type='radio' name='songSelect' class='songSelect' id='buryafriend' value='src\Billie Eilish - bury a friend.mp3' checked>
-    <label for='buryafriend'>bury a friend - Billie Eilish</label>
     
-    <input type='checkbox' class='extraParams' id='livingWalls' checked>
-    <label for='livingWalls'>Reactive Walls</label>
-    <input type='checkbox' class='extraParams' id='livingIndicator' checked>
-    <label for='livingIndicator'>Reactive Player Circle</label>
     <p>wasd to move around :)</p>
     <p>vision circle expands based on music</p>
 </body>

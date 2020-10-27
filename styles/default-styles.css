@@ -2,11 +2,3 @@ body {
     background-color: black;
     color: white;
 }
-
-button[data-playing="yes"]:after {
-    content: "Pause";
-}
-
-button[data-playing="no"]:after {
-    content: "Play";
-}
