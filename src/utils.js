@@ -131,6 +131,10 @@ const utils = {
 
             [array[i], array[j]] = [array[j], array[i]];
         }
+    },
+
+    clamp(input, min, max) {
+        return Math.min(Math.max(input, min), max);
     }
 }
 

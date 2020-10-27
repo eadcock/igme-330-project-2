@@ -10,13 +10,7 @@ import { setUpUI } from './ui.js';
 let canvas, ctx, analyserNode, audioData;
 const canvasWidth = 1080;
 const canvasHeight = 720;
-let fps = 30;
 let player;
-
-// bpms
-// home 170/2 = 85
-// shelter = 90
-// bury a friend = 120
 
 const beatParams = {
     bpm: 120,
@@ -34,6 +28,7 @@ let beat = [];
 let maxRadius = 78;
 let walls = [];
 let enemies = [];
+let progressBars = [];
 
 let maze;
 
@@ -50,7 +45,7 @@ function init() {
 
     player = new gameObjects.Player(ctx, 250, 50, 0, 0);
 
-    
+    createProgressIndicator();
 
     audio.setVolume(0.2);
 
@@ -62,27 +57,6 @@ function init() {
 function buildLevel() {
     // build walls
     maze = new Maze(ctx, walls, canvasWidth, canvasHeight, 12, 8);
-
-    // walls.push(new gameObjects.Wall(ctx, 0, 395, 300, 5)); // bottom
-    // walls.push(new gameObjects.Wall(ctx, 0, 0, 5, 400)); // left
-    // walls.push(new gameObjects.Wall(ctx, 0, 0, 600, 5));
-    // walls.push(new gameObjects.Wall(ctx, 400, 395, 200, 5));
-
-    // walls.push(new gameObjects.Wall(ctx, 595, 0, 5, 400)); // right
-
-    // walls.push(new gameObjects.Wall(ctx, 100, 0, 5, 200)); // top left L
-    // walls.push(new gameObjects.Wall(ctx, 100, 200, 100, 5));
-
-    // walls.push(new gameObjects.Wall(ctx, 300, 0, 5, 100)); // entrance
-    // walls.push(new gameObjects.Wall(ctx, 200, 100, 105, 5));
-
-    // walls.push(new gameObjects.Wall(ctx, 500, 100, 5, 100)); // right L
-    // walls.push(new gameObjects.Wall(ctx, 500, 200, 100, 5));
-
-    
-    // walls.push(new gameObjects.Wall(ctx, 300, 200, 5, 200)); // cross
-    // walls.push(new gameObjects.Wall(ctx, 100, 300, 400, 5));
-    // walls.push(new gameObjects.Wall(ctx, 400, 100, 5, 200));
     
     // build enemies
     enemies.push(new gameObjects.Enemy(ctx, [{x:50, y:50}, {x:50, y:350}, {x:250, y:350}]));
@@ -159,35 +133,14 @@ function loop(now) {
     ctx.restore();
 
     player.draw();
+
+    updateProgressIndicator();
+    drawProgressIndicator();
     
     ctx.restore();
 
     beatParams.last = now;
 }
-
-// function bpmVisionCone(now) {
-//     if(!timeSinceLastBeat) timeSinceLastBeat = 0;
-//     timeSinceLastBeat += now - (last ?? 0);
-//     if(timeSinceLastBeat > spb * 1000) {
-//         beat.push(new gameObjects.BeatCone(ctx, () => player.x, () => player.y, now, maxRadius, 1, beat.length == 0));
-//         timeSinceLastBeat = 0;
-//     }
-    
-//     ctx.save();
-//     if(beat.length > 1 && beat[0].update(now)) {
-//         beat[1].oldest = true;
-//         beat.splice(0, 1);
-//         ctx.restore();
-//         ctx.save();
-//         beat[0].update(now);
-//     }
-//     for(let i = beat.length - 1; i > 0; i--) {
-//         if(beat[i].update(now)) {
-//             beat.splice(i, 1);
-//         } 
-//     }
-//     last = now;
-// }
 
 function frequencyVisionCone() {
     audio.analyserNode.getByteFrequencyData(audio.audioData);
@@ -237,6 +190,35 @@ function frequencyVisionCone() {
     }
 
     ctx.restore();
+}
+
+const progressParams = {
+    thickness: 20,
+}
+
+function createProgressIndicator() {
+    progressBars.push(
+        new gameObjects.Rectangle(ctx, 0, 0, progressParams.thickness, progressParams.thickness), // down
+        new gameObjects.Rectangle(ctx, 0, 0, progressParams.thickness, progressParams.thickness), // right
+        new gameObjects.Rectangle(ctx, canvasWidth, canvasHeight - progressParams.thickness, progressParams.thickness, progressParams.thickness), // left
+        new gameObjects.Rectangle(ctx, canvasWidth - progressParams.thickness, canvasHeight, progressParams.thickness, progressParams.thickness)); // up
+}
+
+function updateProgressIndicator() {
+    let progress = utils.clamp(audio.element.currentTime / audio.element.duration, 0, 1);
+    if(!progress) progress = 0;
+    progressBars[0].h = utils.map(progress, [0, 1], [progressParams.thickness, canvasHeight]);
+    progressBars[1].w = utils.map(progress, [0, 1], [progressParams.thickness, canvasWidth]);
+    progressBars[2].x = utils.map(progress, [0, 1], [canvasWidth - progressParams.thickness, progressParams.thickness]);
+    progressBars[2].w = canvasWidth - progressBars[2].x;
+    progressBars[3].y = utils.map(progress, [0, 1], [canvasHeight - progressParams.thickness, progressParams.thickness]);
+    progressBars[3].h = canvasHeight - progressBars[3].y;
+}
+
+function drawProgressIndicator() {
+    for(const bar of progressBars) {
+        bar.draw();
+    }
 }
 
 export {

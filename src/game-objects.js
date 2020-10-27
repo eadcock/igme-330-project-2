@@ -13,9 +13,11 @@ class GameObject {
     }
 
     draw() {
-        ctx.save();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        ctx.restore();
+        this.ctx.save();
+        this.ctx.globalCompositeOperation = 'source-over';
+        this.ctx.fillStyle = 'white';
+        this.ctx.fillRect(this.x, this.y, this.w ?? 5, this.h ?? 5);
+        this.ctx.restore();
     }
 
     testCollision(a, b) {
@@ -33,6 +35,20 @@ class GameObject {
             bBottom < aTop);
     }
 }
+
+class Rectangle extends GameObject {
+    constructor(ctx, x = 0, y = 0, w = 0, h = 0) {
+        super(ctx, x, y);
+        this.w = w;
+        this.h = h;
+    }
+
+    draw() {
+        super.draw();
+    }
+}
+
+
 let offset = 1;
 let index = 0;
 class Wall extends GameObject {
@@ -341,5 +357,6 @@ export {
     Player,
     Wall,
     BeatCone,
-    Enemy
+    Enemy,
+    Rectangle
 };

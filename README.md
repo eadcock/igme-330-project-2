@@ -18,15 +18,14 @@ Made by Peyton Anderson and Eric Adcock
    - [] additional tooltips
 1. Controls
     - [x] Player/pause button
-    - [] Volume slider
+    - [x] Volume slider
     - [] Fullscreen button
     - [] Progress indicator
     - [] 2 additional sliders
     - [] 3 checkboxes <-- turn on or off living walls
-    - [] 1 radio button group <-- ours will be difficulty selection
-    - [] both frequency and waveform data
+    - [x] 1 radio button group <-- ours will be difficulty selection
+    - [x] both frequency and waveform data
     - [] distort music after taking a point of damage
-    - [] custom song
 
 ## C. Media
 
