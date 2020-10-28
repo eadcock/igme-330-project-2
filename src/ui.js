@@ -4,7 +4,7 @@ import * as main from './main.js';
 
 let volumeSlider;
 
-let gui, play, pause, restart;
+let gui, play, pause, restart, distortion, fullscreen;
 
 let controls = {
     play: function() {
@@ -32,12 +32,30 @@ let controls = {
     restart: function() {
         main.reset();
     }, 
+    toggleFullscreen: function() {
+        if(!this.fullscreen) {
+            if(main.canvas.webkitRequestFullScreen)
+                main.canvas.webkitRequestFullScreen();
+            else
+                main.canvas.mozRequestFullScreen();
+        
+        } else {
+            if(main.canvas.webkitCancelFullScreen())
+                main.canvas.webkitCancelFullScreen();
+            else
+                main.canvas.mozCancelFullScreen();
+        }
+
+        this.fullscreen = !this.fullscreen;
+    },
     song: 'bury a friend - Billie Eilish', 
     volume: 20, 
     playerSpeed: 1, 
     enemySpeed: 1, 
     livingWalls: true, 
-    livingIndicator: true
+    livingIndicator: true,
+    distortion: true,
+    fullscreen: false,
 }
 
 function setUpUI() {
@@ -63,8 +81,15 @@ function setUpUI() {
     gui.add(controls, 'livingIndicator').onChange(function(newValue) {
         main.drawParams.livingIndicator = newValue;
     });
+    distortion = gui.add(controls, 'distortion').onChange(newValue => {
+        main.audioParams.distort = newValue;
+        if(!newValue) {
+            audio.oscillator.stopEnemyIndicator();
+        }
+    });
     play = gui.add(controls, 'play');
     restart = gui.add(controls, 'restart');
+    fullscreen = gui.add(controls, 'toggleFullscreen').name('toggle fullscreen');
 }
 
 function setSong(song) {

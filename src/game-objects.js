@@ -34,6 +34,10 @@ class GameObject {
             bTop > aBottom ||
             bBottom < aTop);
     }
+
+    boundingCircle(pos1x, pos1y, rad1, pos2x, pos2y, rad2) {
+        return utils.calcSquareDistance(pos1x, pos1y, pos2x, pos2y) < Math.pow(rad1 + rad2, 2);
+    }
 }
 
 class Rectangle extends GameObject {
@@ -111,19 +115,25 @@ class Player extends GameObject {
         this.speed = 1;
         this.initialX = x;
         this.initialY = y;
+        this.deaths = 0;
     }
 
-    update(enemies, walls) {
+    update(enemies, walls, oscillator, distort) {
         let canMove = true;
         let futurePos = {
             x: this.x + this.vx * this.speed,
             y: this.y + this.vy * this.speed
         };
         
+        let enemyNear = false;
         // check if colliding with enemies
         for (let i = 0; i < enemies.length; i++) {
             if (this.testCollision(futurePos, enemies[i])) {
                 this.resetPosition();
+                if(distort) {
+                    this.deaths++;
+                    oscillator.startEnemyIndicator(this.deaths);
+                }
                 canMove = false;
                 break;
             }

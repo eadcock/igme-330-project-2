@@ -1,5 +1,6 @@
+
 let audioCtx;
-let element, sourceNode, analyserNode, gainNode, playing = false;
+let element, sourceNode, analyserNode, gainNode, oscillatorNode, playing = false;
 let last = 0, duration = 0;
 const DEFAULTS = Object.freeze({
     gain: 0.5,
@@ -7,6 +8,14 @@ const DEFAULTS = Object.freeze({
 });
 
 let audioData = new Uint8Array(DEFAULTS.numSamples / 2);
+
+let oscillator = {
+    startEnemyIndicator: startEnemyIndicator,
+    stopEnemyIndicator: stopEnemyIndicator,
+    active: false
+}
+
+let distortion;
 
 function setupWebaudio(filePath) {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -20,10 +29,29 @@ function setupWebaudio(filePath) {
     analyserNode.fftSize = DEFAULTS.numSamples;
     gainNode = audioCtx.createGain();
     gainNode.gain.value = DEFAULTS.gain;
+    distortion = audioCtx.createWaveShaper();
     sourceNode.connect(analyserNode);
     analyserNode.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
+    gainNode.connect(distortion);
+    distortion.connect(audioCtx.destination);
+
+    distortion.curve = makeDistortionCurve(0);
 }
+
+// http://stackoverflow.com/a/22313408/1090298
+function makeDistortionCurve( amount ) {
+    var k = typeof amount === 'number' ? amount : 0,
+      n_samples = 44100,
+      curve = new Float32Array(n_samples),
+      deg = Math.PI / 180,
+      i = 0,
+      x;
+    for ( ; i < n_samples; ++i ) {
+      x = i * 2 / n_samples - 1;
+      curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+    }
+    return curve;
+  };
 
 function loadSoundFile(filePath) {
     element.src = filePath;
@@ -64,6 +92,16 @@ function update(now) {
     }
 }
 
+function startEnemyIndicator(amount) {
+    distortion.curve = makeDistortionCurve(amount);
+    oscillator.active = true;
+}
+
+function stopEnemyIndicator() {
+    distortion.curve = makeDistortionCurve(0);
+    oscillator.active = false;
+}
+
 export {
     audioCtx,
     setupWebaudio,
@@ -77,5 +115,6 @@ export {
     update,
     endSong,
     getVolume,
-    element
+    element,
+    oscillator
 };

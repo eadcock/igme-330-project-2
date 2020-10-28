@@ -14,18 +14,18 @@ Made by Peyton Anderson and Eric Adcock
 1. A splash screen will appear telling the player the basic controls. Here the player can select their difficulty. Once the game starts, a help button will forever be in the top right corner if the player needs any additional help. A pause menu will also let the player back out and access additional options such as volume.
 1. - [x] Title
    - [x] h1 element
-   - [] instructions
-   - [] additional tooltips
+   - [ ] instructions
+   - [ ] additional tooltips
 1. Controls
     - [x] Player/pause button
     - [x] Volume slider
-    - [] Fullscreen button
-    - [] Progress indicator
-    - [] 2 additional sliders
-    - [] 3 checkboxes <-- turn on or off living walls
+    - [ ] Fullscreen button
+    - [x] Progress indicator
+    - [x] 2 additional sliders
+    - [ ] 3 checkboxes <-- turn on or off living walls
     - [x] 1 radio button group <-- ours will be difficulty selection
     - [x] both frequency and waveform data
-    - [] distort music after taking a point of damage
+    - [ ] distort music after taking a point of damage
 
 ## C. Media
 
@@ -38,3 +38,52 @@ None :)
 
 ## Our Grade
 100% because we are perfect :)))
+
+| Criteria | Weight | Your Score |
+| -------- | ------ | ---------- |
+| **A. [Overall Quality of Experience/Impact](#theme)** | **50** | |
+|    1. Does the app have an coherent and identifiable theme? | | Yes |
+|    2. Does the app work as intended and it is reasonably engaging (both visually and otherwise)? | | Yes |
+|    3. Does the app functionality and programming go beyond what we did in class? | | Definitely |
+|    4. Is the app at least *approaching/approximating* "portfolio quality" that you would not hesitate to show a potential employer? | | Yes |
+|    **Overall:** Excellent/Outstanding/"Wow" (A+ = 50/50), Very Good (A = 45/50), Good (35-40/50), Fair (25-35/50), Poor (15-25/50), Unacceptable (0-15/50) ||
+| &nbsp; | &nbsp; |
+| **B. [User Experience](#user-experience)** | **20** | |
+|    1. The purpose of the app and how to use it are obvious | Fairly |
+|    2. Users should be able to figure out how to use the app with minimal instruction. The app runs without errors | Yes |
+|    3. Has required text content | Yes |
+|    4. Has required controls. Widgets are well labeled and follow interface conventions | Yes |
+|    5. Runs without errors | Yes |
+|    6. Visual design is pleasing (or at a minimum, "not ugly") | Yes |
+|    - *Missing controls* | *(-5 each)* |
+|    - *Errors* | *(-? depending on severity)* |
+|    **Overall:** You should aim to score 20/20 in this category ||
+| &nbsp; | &nbsp; |
+| **C. [Media](#media)**  | **15** | |
+|    - *CSS does not pass validation* | *(-5)* | 0 |
+|    - *HTML does not pass validation* | *(-5)* | 0 |
+|    - *Missing required semantic HTML elements* | *(-5)* | 0 |
+|    - *Majority of CSS is not in an external stylesheet* | *(-5)* | 0 |
+|    - *Missing an embedded font* | *(-5)* | -5 |
+|    - *Images not properly optimized* | *(-5)* | 0 |
+|    - *Did not use `canvas.save()` or `canvas.restore()`* | *(-5)* | 0 |
+|    - *Did not draw rectangles, arcs, and lines* | *(-10)* | 0 |
+|    - *Did not use canvas API* | *0 grade on project* | We did :) |
+|    **Overall:** You should aim to score 15/15 in this category ||
+| &nbsp; | &nbsp; |
+| **D. [Code](#code)**  | **15** | |
+|    - *File Naming standards NOT followed (per incident)* | *(-1 to -5)* | 0 |
+|    - *Code standards NOT followed (per incident)* | *(-1 to -5)* | 0 |
+|    - *Inline event handlers used* | *(-5)* | 0 |
+|    - *Missing an index.js (or main.js) file* | *(-10)* | 0 |
+|    - *Missing/improperly implemented ES6 Modules* | *(-15)* | 0 |
+|    **Overall:** You should aim to score 15/15 in this category || 15/15 |
+| &nbsp; | &nbsp; |
+| **Total Points Possible** | **100** | 95 |
+| &nbsp; | &nbsp; |
+| **Other Deductions** | **&darr; Don't lose points for any of these! &darr;** | |
+| *Deduction if required prototype is not submitted to dropbox on time* | *(-10)* | |
+| *Deduction if final and complete documentation is not submitted to dropbox on time* | *(-10)* | |
+| *Deduction if video demo is not submitted to dropbox on time* | *(-10)* | |
+| *Deduction if ES6 Module Pattern is not used* | *(-10)* | |
+| *-15% late penalty 0-24 hours after due date, -15% 24-48 hours and so on, means a maximum grad of 85% on any project that is submitted late* | *(-??)* | |

@@ -4,7 +4,7 @@ import {
 import * as audio from './audio.js';
 import * as input from './input.js';
 import * as gameObjects from './game-objects.js';
-import {Maze, Cell} from './Maze.js';
+import {Maze} from './Maze.js';
 import { setUpUI } from './ui.js';
 
 let canvas, ctx, analyserNode, audioData;
@@ -22,6 +22,10 @@ const beatParams = {
 const drawParams = {
     livingWalls: true,
     livingIndicator: true
+}
+
+const audioParams = {
+    distort: true
 }
 
 let beat = [];
@@ -55,6 +59,21 @@ function init() {
     loop();
 }
 
+function on_fullscreen_change() {
+    if(document.mozFullScreen || document.webkitIsFullScreen) {
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+    }
+    else {
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+    }
+}
+
+document.addEventListener('mozfullscreenchange', on_fullscreen_change);
+document.addEventListener('webkitfullscreenchange', on_fullscreen_change);
+
 function buildLevel() {
     // build walls
     maze = new Maze(ctx, walls, canvasWidth, canvasHeight, 12, 8);
@@ -75,7 +94,7 @@ function loop(now) {
     requestAnimationFrame(loop);
 
     audio.update(now);
-    player.update(enemies, walls);
+    player.update(enemies, walls, audio.oscillator, audioParams.distort);
 
     ctx.save();
 
@@ -122,14 +141,6 @@ function loop(now) {
 
     for (let i = 0; i < enemies.length; i++) {
         enemies[i].update();
-        
-        // draw surrounding circle
-        // ctx.beginPath();
-        // ctx.strokeStyle = utils.makeColor(255, 0, 0, 0.9);
-        // ctx.lineWidth = 2;
-        // ctx.arc(enemies[i].x, enemies[i].y, avg, 0, 2 * Math.PI, false);
-        // ctx.stroke();
-        // ctx.closePath();
     }
     ctx.restore();
 
@@ -139,6 +150,8 @@ function loop(now) {
     drawProgressIndicator();
     
     ctx.restore();
+
+    
 
     beatParams.last = now;
 }
@@ -231,5 +244,7 @@ export {
     reset,
     beatParams,
     beat,
-    drawParams
+    drawParams,
+    audioParams,
+    canvas
 };

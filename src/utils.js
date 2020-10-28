@@ -135,6 +135,10 @@ const utils = {
 
     clamp(input, min, max) {
         return Math.min(Math.max(input, min), max);
+    },
+
+    calcSquareDistance(pos1x, pos1y, pos2x, pos2y) {
+        return Math.pow(pos1x - pos2x, 2) - Math.pow(pos1y - pos2y, 2);
     }
 }
 
