@@ -33,6 +33,10 @@ Made by Peyton Anderson and Eric Adcock
 
 ## Post Mortem
 
+## Features We Could Add Next
+- More mazes
+- Ability for user's to load in their own music
+
 ## External Resources
 None :)
 
