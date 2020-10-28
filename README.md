@@ -14,34 +14,23 @@ Made by Peyton Anderson and Eric Adcock
 1. A splash screen will appear telling the player the basic controls. Here the player can select their difficulty. Once the game starts, a help button will forever be in the top right corner if the player needs any additional help. A pause menu will also let the player back out and access additional options such as volume.
 1. - [x] Title
    - [x] h1 element
-   - [ ] instructions
-   - [ ] additional tooltips
 1. Controls
     - [x] Player/pause button
     - [x] Volume slider
-    - [ ] Fullscreen button
+    - [x] Fullscreen button
     - [x] Progress indicator
     - [x] 2 additional sliders
-    - [ ] 3 checkboxes <-- turn on or off living walls
+    - [x] 3 checkboxes <-- turn on or off living walls
     - [x] 1 radio button group <-- ours will be difficulty selection
     - [x] both frequency and waveform data
-    - [ ] distort music after taking a point of damage
+    - [x] distort music after taking a point of damage
 
-## C. Media
+## Above and Beyond
+- Utilization of ctx.globalCompositeOperation to draw below already drawn objects, as well as using a 'xor' like operation to 'cut out' a transparent circle from a black square (which is how we did the vision circle on beat).
+- Random Maze Generation
+- Fancy classes for our walls that come alive
+- Circular sine wave created from wavelength data that follows the circle around
 
-## D. Code
-
-## Post Mortem
-
-## Features We Could Add Next
-- More mazes
-- Ability for user's to load in their own music
-
-## External Resources
-None :)
-
-## Our Grade
-100% because we are perfect :)))
 
 | Criteria | Weight | Your Score |
 | -------- | ------ | ---------- |
